@@ -1,4 +1,4 @@
-# Basic Lidar Acquisition Processing
+# Basic Lidar Processing
 
 This folder contains a general-purpose R workflow for completing the basic processing steps commonly needed for a airborne lidar acquisition. The script will process and normalize LAS/LAZ point clouds to generate LAX files, DEMs, and CHMs as well as prepare the point cloud for later analysis such as area-based modeling, forest-metric generation, individual-tree detection, and etc.
 
