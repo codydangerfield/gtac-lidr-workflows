@@ -66,7 +66,7 @@ plan(multisession, workers = 3)
 ## ---- USER INPUT ----
 resolution <- 20 # Resolution of your grid metrics
 input_dir  <- "D:/temp/Normalized" # Pathway to your las/laz files 
-output_dir <- "//afssxgtacnas301/R10_TongassNF/2026_TongassLidarSupport/Data/First_Order_Metrics/Kruzof" # Output of grid metrics and tiles *I would leave the same as input unless you need it in a different parent directory 
+output_dir <- "D:/temp/Normalized" # Output of grid metrics and tiles *I would leave the same as input unless you need it in a different parent directory 
 
 
 zmin <- 2 #minimum height at which elev metrics will be calculated *THIS DOES NOT INCLUDE % ABOVE 2 M OR % ABOVE THE MEAN
