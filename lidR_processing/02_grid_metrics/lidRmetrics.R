@@ -1,5 +1,5 @@
 ###############################################################################
-# Script Name: LiDAR First-Order Grid Metrics
+# Script Name: LiDAR Grid Metrics
 # Description:
 #   Calculates grid-based LiDAR metrics from normalized LAS/LAZ data using lidR,
 #   lidRmetrics, and terra. Metrics are computed at user-defined resolution,
@@ -24,7 +24,8 @@
 #  
 # Requirements:
 #   - Normalized LAS/LAZ tiles
-#   - R packages: lidR, lidRmetrics, terra, future, mapview, leaflet, moments, lmom
+#   - R packages: lidR, lidRmetrics, terra, future, mapview, leaflet, moments,
+#     lmom, Lmoments, geometry
 #   - lidRmetrics auto-installs from GitHub if missing
 #
 # Author: Cody Dangerfield
@@ -32,7 +33,10 @@
 ###############################################################################
 
 ## ---- Install & Load Packages ----
-required_pkgs <- c("lidR", "future", "terra", "leaflet", "mapview", "moments", "lmom")
+required_pkgs <- c(
+  "lidR", "future", "terra", "leaflet", "mapview", "moments", "lmom",
+  "Lmoments", "geometry"
+)
 
 new_pkgs <- required_pkgs[!(required_pkgs %in% installed.packages()[,"Package"])]
 if (length(new_pkgs) > 0) {

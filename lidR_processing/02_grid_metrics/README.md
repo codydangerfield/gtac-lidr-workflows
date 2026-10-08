@@ -1,6 +1,6 @@
 # Lidar Grid Metrics
 
-This folder contains an R workflow for calculating first-order, grid-based lidar metrics from normalized LAS or LAZ point clouds. The metrics describe vegetation height, point-return intensity, and the vertical distribution of returns. They can be used as predictor variables for area-based modeling (ABA), forest-structure mapping, and other raster analyses.
+This folder contains an R workflow for calculating lidar metrics at the pixel level from normalized LAS or LAZ point clouds. The metrics describe vegetation height, point-return intensity, and the vertical distribution of returns. They can be used as predictor variables for area-based modeling (ABA), forest-structure mapping, and other raster analyses.
 
 ## Script
 
@@ -20,7 +20,7 @@ Each section:
 2. applies point filters;
 3. calculates metrics at the configured grid resolution;
 4. writes tiled GeoTIFF outputs;
-5. mosaics the tiles; and
+5. mosaics the tiles with a vrt file; and
 6. writes one final GeoTIFF for each metric.
 
 The three metric sections do not depend on one another and may be run separately. Run the script one section at a time rather than executing the entire file at once.
@@ -29,7 +29,6 @@ The three metric sections do not depend on one another and may be run separately
 
 - Height-normalized LAS or LAZ files.
 - A consistent projected coordinate reference system (CRS).
-- Consistent horizontal and vertical units.
 - Valid return-number, classification, and intensity attributes.
 - Sufficient storage for temporary metric tiles and final GeoTIFFs.
 
@@ -40,15 +39,17 @@ The workflow assumes heights and grid dimensions are measured in meters. The def
 The workflow uses:
 
 - `lidR`
-- `lidRmetrics`
+- [`lidRmetrics`](https://github.com/ptompalski/lidRmetrics)
 - `future`
 - `terra`
 - `mapview`
 - `leaflet`
 - `moments`
 - `lmom`
+- `Lmoments`
+- `geometry`
 
-Missing CRAN packages are installed automatically. If `lidRmetrics` is unavailable, the script installs `devtools` when needed and then installs `lidRmetrics` from its GitHub repository.
+Missing CRAN packages are installed automatically. If [`lidRmetrics`](https://github.com/ptompalski/lidRmetrics) is unavailable, the script installs `devtools` when needed and then installs the package from its GitHub repository.
 
 ## User configuration
 
@@ -158,7 +159,7 @@ The script includes examples for restarting catalog processing with `opt_restart
 
 ## Quality-control considerations
 
-Review at minimum:
+Review:
 
 - normalization quality and ground values near zero;
 - CRS and measurement units;
