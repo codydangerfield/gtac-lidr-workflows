@@ -1,28 +1,29 @@
-# Basic LiDAR Acquisition Processing
+# Basic Lidar Acquisition Processing
 
-This folder contains a general-purpose R workflow for completing the basic processing steps commonly needed for a new airborne LiDAR acquisition. The workflow prepares raw LAS/LAZ point clouds for later analysis such as area-based modeling, forest-metric generation, individual-tree detection, and canopy segmentation.
+This folder contains a general-purpose R workflow for completing the basic processing steps commonly needed for a new airborne lidar acquisition. The workflow prepares raw LAS/LAZ point clouds for later analysis such as area-based modeling, forest-metric generation, individual-tree detection, and canopy segmentation.
 
 ## Script
 
-- [LiDAR LAX, DEM, normalization, and CHM workflow](%E2%81%AFlidR_LAX_DEM_Normalize_CHM.R)
+- [lidR LAX, DEM, normalization, and CHM workflow](lidR_LAX_DEM_Normalize_CHM.R)
 
 ## Processing workflow
 
-The script is organized into sections that should be run in sequence:
+The script is organized into four processing sections:
 
 1. **Create LAX indexes** — creates a `.lax` spatial index beside each LAS/LAZ file to improve catalog queries and processing performance.
 2. **Create Digital Elevation Models (DEMs)** — interpolates ground-classified points with a TIN to generate acquisition-wide terrain rasters.
-3. **Normalize point-cloud heights** — subtracts the modeled ground elevation from each point so its Z value represents height above ground.
-4. **Create Canopy Height Models (CHMs)** — rasterizes the normalized point cloud into canopy-height surfaces for vegetation analysis.
+3. **Normalize point-cloud heights** — normalizes the Z value of each point so its value represents height above ground rather than elevation.
+4. **Create Canopy Height Models (CHMs)** — rasterizes the normalized point cloud into a canopy height model (CHM).
+
+The full workflow does not have to be run in this order. LAX indexing and DEM creation are independent steps and may be skipped when those products already exist or are not needed. However, point-cloud normalization must be completed before creating a CHM with this script.
 
 ## Input requirements
 
 - An acquisition folder containing LAS or LAZ files.
-- A valid, consistent projected coordinate reference system (CRS) for all files.
 - Ground-classified points, normally ASPRS class 2, for DEM creation and height normalization.
 - Sufficient disk space for indexes, DEMs, normalized point clouds, and CHMs.
 
-Before processing, review the point-cloud classifications, CRS, horizontal units, vertical units, and expected vegetation-height range. The script removes noise classes 7 and 18, withheld points, and points below zero during the relevant processing stages.
+Before processing, review the vendor's report, point cloud classifications, CRS, and expected vegetation height range. The script removes noise classes 7 and 18, withheld points, and points below zero during the relevant processing stages. Review the `-drop_z_below 0` filter if the acquisition contains valid elevations below sea level. You may also want to remove additional classes based on the vendor's report.
 
 ## R packages
 
@@ -50,7 +51,7 @@ Edit the **USER CONFIGURATION** section before running a new acquisition:
 | `max_height` | Maximum accepted normalized canopy height, in the point cloud's vertical units. |
 | `folder` | Folder containing the acquisition's source LAS/LAZ files. |
 
-The script detects whether the CRS uses meters or feet and adds the detected unit and raster resolution to DEM and CHM filenames. Confirm that horizontal and vertical units are appropriate before processing; CRS unit detection does not validate the point cloud's vertical units.
+The script detects whether the CRS uses meters or feet and adds the detected unit and raster resolution to DEM and CHM filenames.
 
 ## Outputs
 
@@ -61,23 +62,32 @@ Acquisition folder/
 ├── source_file.las or source_file.laz
 ├── source_file.lax
 ├── DEM/
-│   └── source_file_DEM_<resolution>.<raster extension>
+│   └── source_file_DEM_<resolution>.tif
 └── Normalized/
-    ├── source_file_Normalized.las or .laz
+    ├── source_file_Normalized.las or source_file_Normalized.laz
     ├── source_file_Normalized.lax
     └── CHM/
-        └── source_file_CHM_<resolution>.<raster extension>
+        └── source_file_CHM_<resolution>.tif
 ```
 
-Exact raster and point-cloud formats are determined by the `lidR` catalog output drivers and source data.
+### Optional LAZ compression for normalized files
+
+Normalized point clouds are written as LAS files by default. To write compressed LAZ files instead, add the following catalog option in the **Normalize Point Cloud** section before calling `normalize_height()`:
+
+```r
+opt_laz_compression(ctg) <- TRUE
+```
+
+LAZ compression can make catalog processing substantially slower. Use LAZ output primarily when storage space is constrained; otherwise, LAS is preferable for processing speed. See the [`lidR` guidance on LAScatalog computation speed](https://cran.r-project.org/web/packages/lidR/vignettes/lidR-computation-speed-LAScatalog.html) for additional details.
+
 
 ## Recommended use
 
-1. Copy or adapt the script for the new LiDAR acquisition.
+1. Copy or adapt the script for the new lidar acquisition.
 2. Set `folder` and review all user-configuration values.
-3. Open the catalog plots and summary to verify tile coverage, chunk layout, file count, and CRS.
-4. Run one processing section at a time in the order shown above.
-5. Inspect each output before continuing to the next section.
+3. View the catalog summary and plots to verify tile coverage, chunk layout, file count, and CRS.
+4. Run one processing section at a time. LAX indexing and DEM creation may be run independently or skipped when they are not needed. Always run normalization before CHM generation.
+5. Inspect each output before continuing to the next section. You may see noise that needs to be classified and removed prior to ABA modeling or lidar metric generation.
 6. Reset parallel processing with the final cleanup section when processing is complete.
 
 Do **not** run the entire script at once with **Ctrl+A** followed by **Ctrl+Enter**. Processing one section at a time makes it easier to inspect results, manage memory, and restart failed catalog chunks.
