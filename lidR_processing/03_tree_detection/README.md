@@ -1,6 +1,6 @@
 # Lidar Individual Tree Detection and Segmentation
 
-This folder contains an R workflow for individual tree detection and segmentation (ITD/ITS) using a marker-controlled watershed. It processes height-normalized LAS or LAZ files with the `lidR` catalog engine and uses `ForestTools` to delineate individual tree crowns. The workflow produces treetop points, crown polygons, canopy height models (CHMs), and, optionally, LAS files in which points are assigned a tree ID.
+This folder contains an R-based workflow for detecting individual treetops and delineating tree crowns using marker-controlled watershed segmentation. It processes height-normalized LAS or LAZ files with the `lidR` catalog engine and uses `ForestTools` to delineate individual tree crowns. The workflow produces treetop points, crown polygons, canopy height models (CHMs), and, optionally, LAS files in which points are assigned a tree ID.
 
 ## Script
 
@@ -11,9 +11,9 @@ This folder contains an R workflow for individual tree detection and segmentatio
 For each LAScatalog chunk, the script:
 
 1. reads the height-normalized point cloud;
-2. creates a 0.5-unit canopy height model (CHM);
+2. creates a 0.5 m canopy height model (CHM);
 3. fills local CHM gaps with a 3 × 3 median focal filter;
-4. detects treetops with a variable-window local maximum filter; change the window size function based on your forest. 
+4. detects treetops with a variable-window local maximum filter;
 5. delineates crown polygons with `ForestTools::mcws()`;
 6. assigns each tree to the unbuffered chunk containing its treetop;
 7. optionally assigns crown `treeID` values to lidar points;
@@ -25,12 +25,7 @@ The workflow uses a custom `LAScatalog` output driver because one catalog operat
 ## Input requirements
 
 - Height-normalized LAS or LAZ files.
-- A consistent projected coordinate reference system (CRS).
-- Classification and height values appropriate for the configured point filters.
-- Neighboring tiles sufficient to populate the catalog buffer.
 - Enough memory and storage for simultaneous chunk processing and output products.
-
-  The current defaults for the buffers, CHMs, and height filters assumes that your las catalog is in meters. Convert the values to ft based on your CRS.
 
 ## R packages
 
@@ -50,6 +45,8 @@ Missing packages are installed automatically from CRAN with their dependencies.
 ## User configuration
 
 Review the **User inputs** section near the beginning of the script before processing a new acquisition:
+
+The current buffer, CHM, and height-filter defaults are in meters. If the catalog uses feet, convert all distance and height parameters to feet before running the workflow. The variable-window local maximum filter should also be tuned to the forest type and point-cloud characteristics. Test it on a small subset before processing the full acquisition. The current function uses a 1% height coefficient and a minimum window size of 3 m: `0.01 × height + 3`. Coefficients from 1% to 7% may be useful starting points for testing, but they should be visually inspected against the CHM.
 
 | Parameter | Purpose |
 | --- | --- |
@@ -77,11 +74,11 @@ The catalog filter also removes classifications 7 and 18, points below zero, and
 
 Buffers are required to reduce edge effects in CHM creation, treetop detection, and crown segmentation. The output is intentionally organized by **treetop ownership**, not strictly clipped to source-tile boundaries:
 
-- Tree tops are exported based on the default las extent so that no duplicate treetops are exported based on the buffer.
-- Crowns are then filtered based on which treetops are within the original extent. This is to limit overlapping or duplicate crowns.
-- When segmented LAS export is enabled, the script retains all points assigned to crowns whose treetops fall within the unbuffered chunk extent, including crown points located within the processing buffer. This creates "overlapping las files" based on extent, but there shouldn't be any true overlap because of the tree_id assignment. The purpose of these exported las files are for visualization purposes and/or whether the user wants to calculate [lidar metrics at the tree level](https://r-lidar.github.io/lidRbook/tree_metrics.html). Future iterations of this script will likely add this option with `crown_metrics`, but TBD.
-- Crown polygons are retained in full when their treetop belongs to the core chunk.
-- CHMs are different: they are cropped to the unbuffered chunk extent to produce conventional non-overlapping raster tiles.
+- Tree tops are exported based on the original LAS extent. This ensures that no duplicate trees are exported based on the loaded buffer.
+- Crown polygons are then filtered according to those tree tops in the original LAS extent. However, a retained crown may extend beyond the original LAS tile or chunk boundary to ensure the full crown is captured.
+- The script retains all points assigned to the exported tree crowns which would include crown points located within the processing buffer. Consequently, neighboring LAS files will technically can have overlapping spatial extents.However, because we are filtering based on the unique trees within each LAS file, there won't be any true overlap or `duplicated points`.
+- Segmented LAS files can be used for visualization or to calculate [tree-level lidar metrics](https://r-lidar.github.io/lidRbook/tree_metrics.html). A future iteration of this workflow might have an option to calculate these metrics during processing with `crown_metrics()`.
+- CHMs are cropped to the unbuffered las extent. These tiles can be assembled into a virtual raster (VRT) for wall-to-wall viewing.
 
 Consequently, a segmented LAS output may extend outside the nominal boundary represented by its filename. This is expected and prevents trees crossing tile boundaries from being spatially truncated.
 
@@ -128,7 +125,6 @@ After catalog processing, the script performs two separate parallel merges:
 1. files ending in `_crowns.gpkg` are combined into `mcws_crowns` and written to `mcwatershed_crown_delineation.gdb`; and
 2. files ending in `_treetops.gpkg` are combined into `mcws_treetops` and written to `mcwatershed_treetops.gdb`.
 
-The merge operation stacks features from the chunk-level files. It does not dissolve, union, clip, or otherwise modify their geometry. The helper function temporarily establishes a parallel plan for reading files and restores the previous plan afterward.
 
 ## Recommended use
 
@@ -147,17 +143,17 @@ Review the following before using the products for inventory or modeling:
 
 - height normalization and ground values near zero;
 - CRS and horizontal/vertical measurement units;
-- ensure variable sized window function is appropriate for your forest `f <- function(x) {x * 0.01+ 3}`;
+- whether the variable-window function is appropriate for the forest type: `f <- function(x) {x * 0.01 + 3}`;
 - output completeness following interrupted or restarted processing; and
 - available memory when increasing the number of workers.
 
 A processing buffer must be wider than the expected crown radius. Trees extending beyond the buffer cannot be exported completely because those points were never loaded into the chunk.
 
-## Tree ID consideration
+## Tree ID considerations
 
-`locate_trees()` currently uses its default tree-ID behavior. Because LAScatalog chunks are processed independently, locally assigned IDs may repeat among chunks. Native `lidR` workflows can generate globally unique, reproducible IDs by setting the `uniqueness` argument in `locate_trees()` to `"bitmerge"`. However, `ForestTools::mcws()` converts its `IDfield` to a standard integer before segmentation, so it cannot safely preserve the 64-bit values encoded by the `bitmerge` strategy.
+`locate_trees()` currently uses its default tree-ID behavior. Because LAScatalog chunks are processed independently, locally assigned IDs may repeat among chunks. Native `lidR` workflows can generate globally unique IDs by setting the `uniqueness` argument in `locate_trees()` to `"bitmerge"`. However, `ForestTools::mcws()` converts its `IDfield` to a standard integer before segmentation, so it doesn't preserve the global IDs.
 
-If `crown_metrics()` is added in a future iteration, the metrics can be calculated within each chunk and joined to its crown polygons before export. In that case, repeated IDs among chunks would not affect the crown attributes because the metrics would already be attached to the correct spatial features. The IDs should not, however, be treated as globally unique keys for joins across merged crown, treetop, or LAS outputs.
+If `crown_metrics()` is added in a future iteration, the metrics can be calculated within each chunk and joined to its crown polygons before export. Repeated `treeID` values would not affect those crown attributes because the metrics would already be attached to the correct spatial features. The IDs should not, however, be treated as globally unique keys for joins across merged crown, treetop, or LAS outputs.
 
 ## Limitations
 
