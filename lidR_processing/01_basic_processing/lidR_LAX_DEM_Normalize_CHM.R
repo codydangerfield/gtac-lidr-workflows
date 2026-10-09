@@ -48,7 +48,7 @@ chm_resolution <- 1    # CHM resolution (adjust based on CRS units: meters or fe
 max_height <- 115        # Maximum tree height filter (adjust based on CRS units: meters or feet) 115 m ~ 377 ft
 
 # ---- Define LAS/LAZ input folder ----
-folder <- "E:/temp"
+folder <- "D:/LAS"
 
 # ---- Setup parallel processing ----
 options(future.globals.maxSize = Inf)
