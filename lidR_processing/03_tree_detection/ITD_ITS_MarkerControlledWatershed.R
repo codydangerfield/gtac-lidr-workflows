@@ -44,7 +44,7 @@
 ###############################################################################
 
 # ---- 0 User inputs ----
-folder <- "//166.2.125.166/R10_TongassNF/Tongass_Structure/Data/Mitkof_Kupreanof_LAZ/Normalized"
+folder <- "E:/LAS/Normalized"
 output_folder <- file.path(folder, "ITD_ITS")
 cores <- 12
 export_las <- TRUE
@@ -208,8 +208,7 @@ export_itd_its_products_driver <- list(
 
 
 # ---- 4 LAS catalog loading and parameterization ----
-
-ctg <- catalog(folder=folder)
+ctg <- readLAScatalog(folder=folder)
 plot(ctg, chunk_pattern = TRUE)
 plot(ctg, map = TRUE)
 opt_chunk_buffer(ctg)<- 30
