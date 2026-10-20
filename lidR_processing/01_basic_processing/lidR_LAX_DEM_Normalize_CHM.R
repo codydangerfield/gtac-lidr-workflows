@@ -135,23 +135,18 @@ opt_output_files(ctg) <- paste0(folder, "/Normalized/", "{*}_Normalized")
 ctg@output_options$drivers$LAS$param <- list(index = TRUE) ## Enable LAS indexing for faster access
 summary(ctg)
 
-# Process one catalog chunk at a time. Before normalization, confirm that the
-# chunk contains at least three ground or water-classified points (classes 2
-# and 9) so that a ground TIN can be constructed. Chunks without enough ground
-# control return NULL and are skipped rather than stopping the catalog run.
+## Custom normalization function that checks for ground points before normalizing.
+## Check for ground points (Classification 2 or 9) before normalizing.
+## Ensure there are at least 3 ground points to perform normalization.
 normalize_w_ground_filter = function(las)
-{
+{  
   ground_pts_present = filter_poi(las, Classification == 2L | Classification == 9L)
   if (lidR::is.empty(ground_pts_present) || nrow(ground_pts_present@data) < 3)
     return(NULL)
-
-  # Interpolate the ground surface with a TIN and convert point elevations to
-  # heights above that surface. The catalog output settings write the result.
   normalized<-normalize_height(las, tin())
   return (normalized)
 }
 
-# Apply the validation and normalization function across the LAS catalog.
 catalog_map(ctg, normalize_w_ground_filter)
 
 
