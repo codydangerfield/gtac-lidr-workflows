@@ -1,4 +1,4 @@
-# Seward LiDAR Sampling & Monitoring Dashboard
+# LiDAR Sampling & Monitoring Dashboard
 
 An R Shiny application designed for forest inventory plot collection planning, real-time field monitoring, and structural representation analysis. This tool complements the `sgsR_SitePlacement.R` site allocation strategy, helping field crews and project managers track sampling progress across environmental strata and feature spaces.
 
