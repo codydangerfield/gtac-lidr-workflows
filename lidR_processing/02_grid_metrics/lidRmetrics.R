@@ -73,6 +73,9 @@ zmin <- 2 #minimum height at which elev metrics will be calculated *THIS DOES NO
 
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
+# Set mapview basemaps to Esri World Imagery, Esri World Topo Map, USGS USTopo, and OpenStreetMap
+mapviewOptions(basemaps = c("Esri.WorldImagery", "Esri.WorldTopoMap", "USGS.USTopo", "OpenStreetMap"))
+
 # ---- lidR Restart Methods (examples) ----
 ## If your catalog processing crashes, you can restart from a specific chunk
 ## or re-run only unprocessed chunks. Place these lines where appropriate:

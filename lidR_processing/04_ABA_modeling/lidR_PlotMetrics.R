@@ -29,7 +29,7 @@
 #
 # Notes:
 #   - Do not use future-based parallel processing with plot_metrics(); it can
-#     slow this workflow rather than improve performance.
+#     slow this workflow.
 #   - Review the catalog filter and maximum-height threshold before use. The
 #     current filter removes classes 7 and 18, negative heights, withheld
 #     points, and points above 115 meters.
@@ -101,7 +101,9 @@ if (!requireNamespace("lidRmetrics", quietly = TRUE)) {
 }
 
 invisible(lapply(cran_packages, library, character.only = TRUE))
-mapviewOptions(basemaps = c("Esri.WorldImagery", "Esri.WorldTopoMap", "OpenStreetMap"))
+
+# Set mapview basemaps to Esri World Imagery, Esri World Topo Map, USGS USTopo, and OpenStreetMap
+mapviewOptions(basemaps = c("Esri.WorldImagery", "Esri.WorldTopoMap", "USGS.USTopo", "OpenStreetMap"))
 
 ## ---- Read Field Plots and LAS Catalog ----
 plots <- st_read(plots_gdb, layer = plots_layer)

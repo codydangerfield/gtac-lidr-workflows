@@ -39,6 +39,9 @@ library(raster)
 library(terra)
 library(mapview)
 
+# Set mapview basemaps to Esri World Imagery, Esri World Topo Map, USGS USTopo, and OpenStreetMap
+mapviewOptions(basemaps = c("Esri.WorldImagery", "Esri.WorldTopoMap", "USGS.USTopo", "OpenStreetMap"))
+
 # ---- USER CONFIGURATION ----
 # Modify these parameters as needed
 n_workers <- 8          # Number of parallel workers

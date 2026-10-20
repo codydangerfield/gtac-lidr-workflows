@@ -82,8 +82,12 @@ if (!all(loaded_packages)) {
   )
 }
 
+# Set mapview basemaps to Esri World Imagery, Esri World Topo Map, USGS USTopo, and OpenStreetMap
+mapviewOptions(basemaps = c("Esri.WorldImagery", "Esri.WorldTopoMap", "USGS.USTopo", "OpenStreetMap"))
+
 # ---- 2 Parallel setup ----
 plan(multisession, workers = cores, gc = TRUE)
+
 
 # ---- 3 Marker-Controlled Watershed Segmentation Functions ----
 
