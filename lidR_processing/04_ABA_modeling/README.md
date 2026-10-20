@@ -4,7 +4,7 @@ This workflow calculates LiDAR metrics for field plots from a height-normalized 
 
 ## Relationship to the grid-metrics workflow
 
-[`lidR_PlotMetrics.R`](lidR_PlotMetrics.R) is the plot-level companion to [`02_grid_metrics/lidRmetrics.R`](02_grid_metrics/lidRmetrics.R). Both workflows use `lidR` and `lidRmetrics` to describe LiDAR structure. The grid workflow summarizes points in raster cells; this workflow summarizes points within field-plot radii and exports a table keyed by plot.
+[`lidR_PlotMetrics.R`](lidR_PlotMetrics.R) is the plot-level companion to [`lidRmetrics.R`](02_grid_metrics/lidRmetrics.R). Both workflows use `lidR` and `lidRmetrics` to describe LiDAR structure. The grid workflow summarizes points in raster cells; this workflow summarizes points within field-plot radii and exports a table keyed by plot.
 
 The plot script currently calculates height-distribution metrics for first and all returns. It does not create pixel rasters or calculate the separate intensity and strata products described by the grid workflow.
 
