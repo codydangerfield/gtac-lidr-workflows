@@ -59,7 +59,7 @@ The application expects input data located within a `data/` subdirectory relativ
 
 ```text
 .
-├── Seward_Lidar_Sampling_Dashboard_rShiny.R
+├── Lidar_Sampling_Dashboard_rShiny.R
 └── data/
     ├── Seward_SamplingPts.gdb                     # Geodatabase containing potential points
     ├── KenaiVegMap_Roads_Trails_Dataset.gdb       # Access layer geodatabase
@@ -69,7 +69,7 @@ The application expects input data located within a `data/` subdirectory relativ
 
 ### Adapting to Your Own Acquisition
 
-To use this dashboard for a new project or region, open `Seward_Lidar_Sampling_Dashboard_rShiny.R` and modify the **CONFIGURATION** section at the top of the file:
+To use this dashboard for a new project or region, open `Lidar_Sampling_Dashboard_rShiny.R` and modify the **CONFIGURATION** section at the top of the file:
 
 ```R
 # --- CONFIGURATION ---
@@ -100,10 +100,10 @@ The application automatically checks for and installs missing dependencies upon 
 
 ### Running the App
 
-Open `Seward_Lidar_Sampling_Dashboard_rShiny.R` in RStudio or run it via the command line:
+Open `Lidar_Sampling_Dashboard_rShiny.R` in RStudio or run it via the command line:
 
 ```R
-shiny::runApp("Seward_Lidar_Sampling_Dashboard_rShiny.R")
+shiny::runApp("Lidar_Sampling_Dashboard_rShiny.R")
 ```
 
 ## Workflow Summary
