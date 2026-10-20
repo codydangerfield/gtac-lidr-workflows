@@ -1,10 +1,59 @@
-# LiDAR Plot Metrics
+# ABA Site Placement and LiDAR Plot Metrics
 
-This workflow calculates LiDAR metrics for field plots from a height-normalized LAS/LAZ catalog. It summarizes the returns inside each circular plot area and writes one row of metrics per plot to a dated CSV, for use in area-based modeling (ABA).
+This folder contains the site-placement and plot-metric workflows for area-based modeling (ABA). [`sgsR_SitePlacement.R`](sgsR_SitePlacement.R) creates a forested, public, accessible sampling frame, allocates sample centers among LiDAR strata, and builds FIA-style plot clusters. [`lidR_PlotMetrics.R`](lidR_PlotMetrics.R) summarizes LiDAR returns within field plots and exports plot-level metrics.
+
+The site-placement script writes planned sampling locations. The plot-metrics script is configured separately for collected field plots; update its geodatabase path and layer to the field data containing `PlotID` values after sampling.
+
+## Site placement (`sgsR_SitePlacement.R`)
+
+The site-placement script uses `zq90_plus2` and `rumple_index` grid rasters to define the forest population and select sampling locations. Its key steps are:
+
+1. Align the two metric rasters and mask them to the forested-area boundary before calculating strata.
+2. Cap each metric at its 99.99th-percentile value and retain cells with valid values for both metrics.
+3. Stack the metrics and use `sgsR::strat_quantiles()` to divide each metric into four quantiles, creating 16 combined strata.
+4. Calculate each stratum's population proportion from the full forested-area stratification raster. These weights are calculated before applying public-land and access-zone masks, so they represent the forest population rather than only the eligible sampling area.
+5. Crop and mask the stratification raster to public land and the configured surface-corrected access zone.
+6. Use `sgsR::sample_strat()` to select stratum-weighted center plots, with the road/trail network, minimum-distance, and inner/outer buffer constraints.
+7. Keep candidate centers 20–242 m from the access network, then create three peripheral subplots around each center in a triangular FIA-style cluster. The peripheral locations are 120 ft from the center.
+8. Thin points that are closer than 119 ft, favoring the more frequent stratum when resolving conflicts, recheck access distance and strata, extract the metric values, and write the sample points to a file geodatabase.
+
+### Site-placement inputs and settings
+
+Edit the **Inputs** and **Outputs** sections near the top of `sgsR_SitePlacement.R` for the project:
+
+| Setting | Purpose | Current default |
+| --- | --- | --- |
+| `root_dir` | Root folder for input data and outputs | `E:/Lidar_Project/SiteSelection` |
+| `zq90_plus2_path`, `rumple_index_path` | Grid metric rasters used to build the population | Files under `Lidar_Metrics/` |
+| `forested_area_path` | Boundary used to define the forested population | `Inputs/Forested_Area.gpkg` |
+| `public_land_gdb_path` | Public-land boundary | `Inputs/Public_Land.gdb` |
+| `access_gdb_path`, `access_zone_path` | Road/trail network and eligible access zone | Files under `Inputs/` |
+| `nstrata_zq90`, `nstrata_rumple` | Number of quantile classes per metric | 4 each (16 combined strata) |
+| `n_samp` | Requested number of center plots | 125 |
+| `mindist` | Minimum spacing used by stratified sampling, in map units | 300 |
+
+The script assumes projected data with distances in meters. Verify raster alignment, coordinate reference systems, and units before processing. The population metric raster and full-population strata raster are intended to be generated once; the script includes commented read-from-disk alternatives for later runs. Recalculate the stratum weights if the forest mask or metric rasters change.
+
+### Site-placement outputs
+
+The configured outputs are written under `root_dir/Outputs/`:
+
+- `mraster_zq90plus2_rumple.tif` — aligned, forest-masked metric stack.
+- `sraster_population_16_strata.tif` — combined strata over the full forested population.
+- `sraster_sampling_area_16_strata.tif` — strata restricted to public land and the access zone.
+- `Sampling_Points.gdb` — sampled and clustered plot locations with extracted metric values.
+
+### Site-placement packages and run notes
+
+`sgsR_SitePlacement.R` installs and loads `lidR`, `sgsR`, `terra`, `sf`, `ggplot2`, and `mapview`. Review the paths and distance settings, then run the script in RStudio. On the first run, the active raster-building sections create the metric stack and population strata. For later runs, the script includes commented options to load those saved rasters instead; use those options when the underlying metric rasters and forest mask have not changed.
+
+## Plot-level LiDAR metrics
+
+[`lidR_PlotMetrics.R`](lidR_PlotMetrics.R) calculates LiDAR metrics for field plots from a height-normalized LAS/LAZ catalog. It summarizes returns inside each circular plot area and writes one row of metrics per plot to a dated CSV.
 
 ## Relationship to the grid-metrics workflow
 
-[`lidR_PlotMetrics.R`](lidR_PlotMetrics.R) is the plot-level companion to [`lidRmetrics.R`](02_grid_metrics/lidRmetrics.R). Both workflows use `lidR` and `lidRmetrics` to describe LiDAR structure. The grid workflow summarizes points in raster cells; this workflow summarizes points within field-plot radii and exports a table keyed by plot.
+[`lidR_PlotMetrics.R`](lidR_PlotMetrics.R) is the plot-level companion to [`lidRmetrics.R`](../02_grid_metrics/lidRmetrics.R). Both workflows use `lidR` and `lidRmetrics` to describe LiDAR structure. The grid workflow summarizes points in raster cells; this workflow summarizes points within field-plot radii and exports a table keyed by plot.
 
 The plot script currently calculates height-distribution metrics for first and all returns. It does not create pixel rasters or calculate the separate intensity and strata products described by the grid workflow.
 
@@ -68,7 +117,7 @@ Outputs are written beneath `root_dir`:
 
 The CSV filename includes the run date. The plot LAS/LAZ output path is configured with `opt_output_files()` and uses each plot's `PlotID` in its filename.
 
-## R packages
+## Plot-metrics packages
 
 The script installs missing CRAN packages and loads:
 
@@ -76,7 +125,7 @@ The script installs missing CRAN packages and loads:
 - `Lmoments`, `lmom`, `moments`, and `geometry`, used by selected `lidRmetrics` functions
 - [`lidRmetrics`](https://github.com/ptompalski/lidRmetrics), installed from GitHub if it is not already available
 
-## Running the script
+## Running the plot-metrics script
 
 1. Confirm the input paths, plot layer, plot radius, and point filters.
 2. Confirm that the plot layer has `PlotID` values and a projected CRS compatible with the catalog.
