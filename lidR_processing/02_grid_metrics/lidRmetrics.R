@@ -65,8 +65,8 @@ plan(multisession, workers = 3)
 
 ## ---- USER INPUT ----
 resolution <- 20 # Resolution of your grid metrics
-input_dir  <- "C:/Lidar/Normalized" # Folder containing normalized LAS/LAZ files
-output_dir <- input_dir # Parent folder for grid-metric tiles and final rasters
+input_dir  <- "D:/LAS/Normalized" # Folder containing normalized LAS/LAZ files 
+output_dir <- "D:/LAS/Normalized" # Parent folder for grid-metric tiles and final rasters
 
 
 zmin <- 2 #minimum height at which elev metrics will be calculated *THIS DOES NOT INCLUDE % ABOVE 2 M OR % ABOVE THE MEAN
