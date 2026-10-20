@@ -40,7 +40,7 @@ The workflow uses buffered catalog processing to reduce edge effects and assigns
 
 ### 4. Lidar-informed field sampling
 
-The [ABA modeling folder](04_ABA_modeling) currently contains project-specific work for stratifying lidar-derived metrics and allocating field plots. The [Sitka sampling script](04_ABA_modeling/sgsR_Sitka.R) uses precomputed structural metrics with `sgsR` to develop strata, allocate samples, and create FIA-style plot clusters.
+The [ABA modeling folder](04_ABA_modeling) currently contains project-specific work for stratifying lidar-derived metrics and allocating field plots. The [sampling script](04_ABA_modeling/sgsR_SitePlacement.R) uses precomputed structural metrics with `sgsR` to develop strata, allocate samples, and create FIA-style plot clusters.
 
 These materials support sampling design and field-plot allocation; they do not yet provide a complete area-based model fitting, validation, and prediction pipeline.
 
