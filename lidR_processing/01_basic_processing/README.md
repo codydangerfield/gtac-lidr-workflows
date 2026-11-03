@@ -5,17 +5,34 @@ This folder contains a general-purpose R workflow for completing the basic proce
 ## Script
 
 - [lidR LAX, DEM, normalization, and CHM workflow](lidR_LAX_DEM_Normalize_CHM.R)
+- [LASTools LAX indexing workflow](LASTools_LAX_files.R)
+
+The LASTools script provides a faster option for generating `.lax` spatial
+indexes across large collections of LAS/LAZ files. Use it when LASTools is
+already installed or can be installed on the processing computer. If LASTools
+is unavailable, the main `lidR` workflow can create the same `.lax` indexes
+directly in R.
 
 ## Processing workflow
 
 The script is organized into four processing chunks:
 
-1. **Create LAX indexes** — creates a `.lax` spatial index beside each LAS/LAZ file to improve catalog queries and processing performance.
+1. **Create LAX indexes** — creates a `.lax` spatial index beside each LAS/LAZ file to improve catalog queries and processing performance. For large acquisitions, the separate LASTools script is generally much faster than generating indexes with `lidR`. The `lidR` method remains available when LASTools is not installed.
 2. **Create Digital Elevation Models (DEMs)** — interpolates ground-classified points with a TIN to generate DEM rasters.
 3. **Normalize point-cloud heights** — normalizes the Z value of each point so its value represents height above ground rather than elevation.
 4. **Create Canopy Height Models (CHMs)** — rasterizes the normalized point cloud into a canopy height model (CHM).
 
 The full workflow does not have to be run in this exact order. LAX indexing and DEM creation are independent steps and may be skipped when those products already exist or are not needed. However, point-cloud normalization must be completed before creating a CHM with this script and it is highly recommended to have LAX files generated if they have not been already. 
+
+### Choosing an LAX indexing method
+
+- **LASTools:** Run `LASTools_LAX_files.R` for faster batch indexing when
+    LASTools is installed. Before running it, update the LAS/LAZ input folder and
+    the path to the `lasindex` executable. The script uses multiple CPU cores.
+- **lidR:** Run the **Create .lax files** section of
+    `lidR_LAX_DEM_Normalize_CHM.R` when LASTools is unavailable or cannot be
+    installed. This method runs entirely within the R workflow but can take
+    substantially longer for large acquisitions.
 
 ## Input requirements
 
@@ -38,6 +55,9 @@ The workflow uses the following packages:
 
 Missing packages are installed automatically from CRAN or the R-lidar R-universe repository.
 
+The optional LASTools indexing script uses R's built-in `parallel` package and
+requires a separate [LASTools](https://rapidlasso.de/) installation. 
+
 ## User configuration
 
 Edit the **USER CONFIGURATION** section before running a new acquisition:
@@ -52,6 +72,14 @@ Edit the **USER CONFIGURATION** section before running a new acquisition:
 | `folder` | Folder containing the acquisition's source LAS/LAZ files. |
 
 The script detects whether the CRS uses meters or feet and adds the detected unit and raster resolution to DEM and CHM filenames.
+
+For `LASTools_LAX_files.R`, also update:
+
+| Setting | Purpose |
+| --- | --- |
+| `folder` | Folder containing the LAS/LAZ files to index. |
+| `cores` | Number of processor cores passed to `lasindex`. |
+| `lasindex` path | Location of the installed LASTools `lasindex` executable in the `system()` command. |
 
 ## Outputs
 
