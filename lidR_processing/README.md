@@ -40,9 +40,17 @@ The workflow uses buffered catalog processing to reduce edge effects and assigns
 
 ### 4. Lidar-informed field sampling
 
-The [ABA modeling folder](04_ABA_modeling) currently contains project-specific work for stratifying lidar-derived metrics and allocating field plots. The [sampling script](04_ABA_modeling/sgsR_SitePlacement.R) uses precomputed structural metrics with `sgsR` to develop strata, allocate samples, and create FIA-style plot clusters.
+The [ABA modeling folder](04_ABA_modeling) contains workflows for extracting
+plot-level lidar metrics, stratifying lidar-derived metrics, and allocating
+field plots. The [plot-metrics script](04_ABA_modeling/lidR_PlotMetrics.R)
+calculates structural metrics for field-plot locations, while the
+[sampling script](04_ABA_modeling/sgsR_SitePlacement.R) uses precomputed
+structural metrics with `sgsR` to develop strata, allocate samples, and create
+FIA-style plot clusters.
 
-These materials support sampling design and field-plot allocation; they do not yet provide a complete area-based model fitting, validation, and prediction pipeline.
+These materials support plot-level metric extraction, sampling design, and
+field-plot allocation; they do not yet provide a complete area-based model
+fitting, validation, and prediction pipeline.
 
 ### 5. Supplementary lidar utilities
 
@@ -58,10 +66,14 @@ Current utilities include:
 - [noise and ground reclassification](05_lidar_utilities/lidR_Reclassify_Noise_Ground.R),
 	with examples for statistical outlier removal and PTD, PMF, or MCC ground
 	classification;
+- [high-performance noise, ground, and DTM processing with lasR](05_lidar_utilities/lasR_Reclassify_Noise_Ground_DEM.R),
+	which chains equivalent operations into an optimized processing pipeline;
 - [overwriting CRS metadata](05_lidar_utilities/lidR_AssignCRS.r) when every
 	file requires correction;
 - [checking and assigning missing CRS metadata](05_lidar_utilities/lidR_CheckCRS_AssignCRS.R)
 	while preserving files whose headers already contain a CRS;
+- [selecting LAScatalog tiles by area of interest](05_lidar_utilities/%E2%81%AFlidR_catalog_intersect_example.R)
+	with `catalog_intersect()` before running a catalog operation;
 - [grid-snapped pixel metrics](05_lidar_utilities/lidR_grid_snapped_grid_metrics.R),
 	which use an existing raster as the `pixel_metrics()` template so separately
 	processed acquisitions share the same origin, resolution, and cell
@@ -74,6 +86,12 @@ coordinates. The acquisition-date utility is a fallback and should not replace
 authoritative vendor products when those products are available. Review the
 [utilities documentation](05_lidar_utilities/README.md) before using any of
 these scripts.
+
+`lasR` is a newer, performance-oriented companion to `lidR`. When both packages
+provide equivalent operations, `lasR` will generally process large datasets
+faster and with lower memory use. `lidR` remains preferable when greater
+algorithm choice, customization, partial catalog processing, restart controls,
+or interactive inspection is required.
 
 ## Typical processing sequence
 
@@ -103,8 +121,12 @@ The workflows are written in R and primarily use the following packages:
 - `sf`
 - `future`
 - `dplyr`
+- `mapview`
 
-Individual workflows require additional packages described in their READMEs or package-loading sections. Some dependencies, such as `lidRmetrics`, may be installed from GitHub rather than CRAN.
+Individual workflows require additional packages described in their READMEs or
+package-loading sections. Some dependencies are not distributed through CRAN:
+`lidRmetrics` is installed from GitHub, and `lasR` is installed from the
+R-lidar R-universe.
 
 ## Before running a workflow
 
@@ -113,6 +135,8 @@ Individual workflows require additional packages described in their READMEs or p
 - Update file paths, worker counts, buffers, resolutions, and height filters for the acquisition.
 - Test the workflow on a small subset before processing the full catalog.
 - Review intermediate and final products for tile-edge effects, missing outputs, unrealistic heights, and incomplete processing.
+- Use the configured `mapview` basemaps to inspect catalog coverage and spatial
+	relationships when a script calls `plot(ctg, map = TRUE)`.
 - Avoid running an entire script at once when it contains separate processing stages intended to be run and reviewed individually.
 
 Large lidar acquisitions can require substantial memory, storage, and processing time. Increasing the number of parallel workers can increase memory use and does not always improve overall performance.
