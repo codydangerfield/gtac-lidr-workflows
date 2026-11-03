@@ -16,7 +16,7 @@ running a script on a new acquisition.
   output file using either a reference LAS/LAZ file or an EPSG code.
 - [Check and assign missing CRS metadata](lidR_CheckCRS_AssignCRS.R) — assigns
   CRS metadata only to files whose headers do not already contain a CRS.
-- [Noise and ground reclassification](lidR_Reclassify_Noise_Ground.R) — filters
+- [lidR noise and ground reclassification](lidR_Reclassify_Noise_Ground.R) — filters
   statistical outliers and classifies ground with PTD, PMF, or MCC.
 - [lasR noise and ground reclassification](lasR_Reclassify_Noise_Ground_DEM.R)
   — uses an optimized lasR pipeline to remove noise, classify ground, generate
