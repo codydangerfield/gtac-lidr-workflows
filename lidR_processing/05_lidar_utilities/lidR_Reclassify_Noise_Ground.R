@@ -82,6 +82,8 @@ if (length(new_packages) > 0) {
 
 invisible(lapply(list_of_packages, library, character.only = TRUE))
 plan(multisession, workers = n_workers, gc = TRUE)
+# Set mapview basemaps to Esri World Imagery, Esri World Topo Map, USGS USTopo, and OpenStreetMap
+mapviewOptions(basemaps = c("Esri.WorldImagery", "Esri.WorldTopoMap", "USGS.USTopo", "OpenStreetMap"))
 
 # ---- 2 Define the noise and ground classification function ----
 noise_ground_classification <- function(chunk) {
@@ -173,6 +175,7 @@ ctg_processing <- ctg
 # )
 
 plot(ctg_processing, chunk_pattern = TRUE)
+plot(ctg_processing, map = TRUE)
 
 # ---- 4 Configure and process the selected catalog ----
 opt_chunk_buffer(ctg_processing) <- 30
