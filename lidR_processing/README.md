@@ -44,6 +44,37 @@ The [ABA modeling folder](04_ABA_modeling) currently contains project-specific w
 
 These materials support sampling design and field-plot allocation; they do not yet provide a complete area-based model fitting, validation, and prediction pipeline.
 
+### 5. Supplementary lidar utilities
+
+The [lidar utilities folder](05_lidar_utilities/README.md) contains optional
+scripts for acquisition-specific data preparation, repair, quality control, and
+specialized processing. These scripts are not required for every acquisition,
+but they may be useful when vendor products are incomplete, metadata need to be
+corrected, classifications require additional work, or outputs from multiple
+acquisitions must share a common grid.
+
+Current utilities include:
+
+- [noise and ground reclassification](05_lidar_utilities/lidR_Reclassify_Noise_Ground.R),
+	with examples for statistical outlier removal and PTD, PMF, or MCC ground
+	classification;
+- [overwriting CRS metadata](05_lidar_utilities/lidR_AssignCRS.r) when every
+	file requires correction;
+- [checking and assigning missing CRS metadata](05_lidar_utilities/lidR_CheckCRS_AssignCRS.R)
+	while preserving files whose headers already contain a CRS;
+- [grid-snapped pixel metrics](05_lidar_utilities/lidR_grid_snapped_grid_metrics.R),
+	which use an existing raster as the `pixel_metrics()` template so separately
+	processed acquisitions share the same origin, resolution, and cell
+	alignment; and
+- [acquisition-date extraction](05_lidar_utilities/lidR_AcquistionDates.R) from
+	LAS GPS time when a vendor-supplied acquisition-date product is unavailable.
+
+The CRS utilities modify metadata only; they do not transform point
+coordinates. The acquisition-date utility is a fallback and should not replace
+authoritative vendor products when those products are available. Review the
+[utilities documentation](05_lidar_utilities/README.md) before using any of
+these scripts.
+
 ## Typical processing sequence
 
 The general order for the documented lidar workflows is:
@@ -56,6 +87,12 @@ The general order for the documented lidar workflows is:
 6. Use selected lidar metrics to support stratification and field-sample allocation.
 
 Some steps can be run independently when the required inputs already exist. Consult each workflow README for its input requirements and processing details.
+
+Supplementary utilities can be inserted before or during this sequence as
+needed. For example, CRS metadata should be repaired before spatial processing,
+noise and ground classifications should be reviewed before terrain modeling or
+normalization, and a shared reference grid should be selected before generating
+metrics that will be mosaicked across multiple acquisitions.
 
 ## General requirements
 
@@ -82,4 +119,8 @@ Large lidar acquisitions can require substantial memory, storage, and processing
 
 ## Repository status
 
-The basic-processing, grid-metrics, and tree-detection folders contain the most complete and reusable workflows in the repository. The ABA materials are more project-specific and remain under active development. Parameters and hard-coded paths should be treated as examples rather than universal defaults.
+The basic-processing, grid-metrics, tree-detection, and utilities folders
+contain the most complete and reusable workflows in the repository. The ABA
+materials are more project-specific and remain under active development.
+Parameters and hard-coded paths should be treated as examples rather than
+universal defaults.
