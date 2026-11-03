@@ -18,11 +18,11 @@ running a script on a new acquisition.
   CRS metadata only to files whose headers do not already contain a CRS.
 - [Noise and ground reclassification](lidR_Reclassify_Noise_Ground.R) — filters
   statistical outliers and classifies ground with PTD, PMF, or MCC.
-- [Grid-Snapped pixel metrics](lidR_grid_snapped_grid_metrics.R) — demonstrates
+- [Grid-snapped pixel metrics](lidR_grid_snapped_grid_metrics.R) — demonstrates
   how to supply an existing raster grid to `pixel_metrics()` so outputs from
   separate lidar acquisitions share the same cell alignment.
 
-## Grid-Snapped pixel metrics
+## Grid-snapped pixel metrics
 
 When metrics are generated separately for multiple lidar acquisitions, the
 default output grid for each acquisition may be positioned independently to
@@ -35,7 +35,8 @@ The reference-grid example passes an existing raster directly to
 `pixel_metrics()`. Using the same reference raster for every acquisition gives
 the outputs a common CRS, origin, cell size, and alignment. The resulting
 metric rasters can be mosaicked without resampling or changing their effective
-spatial resolution.
+spatial resolution. Each output metric raster will have the same cell
+resolution as the reference raster.
 
 The included script calculates rumple index as an example. Other metric
 expressions can be substituted inside `pixel_metrics()`. See the
@@ -47,12 +48,18 @@ before processing.
 
 ## Noise and ground reclassification
 
-The reclassification script can be levelerage to reclassify noise or ground points  that were missed by the vendor. Users should review the existing classification and fine tune the algorithms to fit their area-of-interest. This script provides an example of how a user can use the `lidR` LAScatalog processing workflow to process the entire LAS/LAZ catalog or only
-catalog tiles intersecting an area of interest. The default assignment in the script 
-`ctg_processing <- ctg` processes the whole catalog. To select tiles for
-reprocessing, use the included `catalog_intersect()` example and assign the
-result to `ctg_processing`. This selects intersecting catalog tiles; it does not
-clip output points exactly to the AOI boundary.
+The reclassification script can be used to address noise or ground points that
+were missed or incorrectly classified by the vendor. Review the existing
+classifications and tune the algorithms for the acquisition and area of
+interest before processing the complete dataset.
+
+The script demonstrates how to use the `lidR` LAScatalog processing workflow on
+the entire LAS/LAZ catalog or only the catalog tiles that intersect an area of
+interest. The default assignment, `ctg_processing <- ctg`, processes the whole
+catalog. To select tiles for reprocessing, use the included
+`catalog_intersect()` example and assign its result to `ctg_processing`. This
+selects intersecting catalog tiles; it does not clip output points to the exact
+AOI boundary.
 
 The **User inputs** section contains the input and output directories, worker
 count, and catalog chunk buffer. Noise- and ground-classification parameters
@@ -74,9 +81,9 @@ noise_sor_m <- 3
 - `m` is the standard-deviation multiplier used to identify outliers.
 
 Values of `k = 15` and `m = 3` provide a relatively conservative filter.
-CloudCompare defaults to `k = 6` and `m = 1`, which is more
-aggressive. Conservative filtering reduces the risk of deleting legitimate
-canopy returns but may leave some noise in the point cloud.
+CloudCompare defaults to `k = 6` and `m = 1`, which is more aggressive.
+Conservative filtering reduces the risk of deleting legitimate canopy returns
+but may leave some noise in the point cloud.
 
 Large swaths of noise missed by the vendor may require manual editing or more
 aggressive filtering. Aggressive settings can remove valid canopy returns,
@@ -100,13 +107,13 @@ parameters and classification call for the corresponding alternative. Only one
 ground-classification call should be active. These are examples and not an
 exhaustive list of the algorithms supported by `lidR`.
 
-In previous tests, PTD processed data substantially faster and outperforms other algos in steep terrain, but showed a greater
-tendency to classify low vegetation as ground on steep terrain. PMF and MCC
-were less prone to extending ground classifications into vegetation, but they
-performed less consistently on steep slopes, produced more interpolation
-artifacts, and could smooth fine-scale topographic variation. MCC was modestly
-faster than PMF in those tests. Results will vary with terrain, vegetation,
-point density, and parameter selection.
+In previous tests, PTD processed data substantially faster and generally
+performed better on steep terrain, but it showed a greater tendency to classify
+low vegetation as ground. PMF and MCC were less prone to extending ground
+classifications into vegetation, but they performed less consistently on steep
+slopes, produced more interpolation artifacts, and could smooth fine-scale
+topographic variation. MCC was modestly faster than PMF in those tests. Results
+will vary with terrain, vegetation, point density, and parameter selection.
 
 General PTD starting ranges for forested, mountainous terrain are:
 
@@ -116,9 +123,10 @@ General PTD starting ranges for forested, mountainous terrain are:
 | `angle` | 40–70 degrees |
 | `distance` | 0.25–3 meters |
 
-These ranges are starting points rather than universal recommendations. Point
-density, terrain complexity, scan geometry, vegetation structure, and CRS units
-all affect suitable settings.
+These ranges assume a projected CRS measured in meters and are starting points
+rather than universal recommendations. Convert the distance-based values when
+working in another unit system. Point density, terrain complexity, scan
+geometry, vegetation structure, and CRS units all affect suitable settings.
 
 ## CRS utility warning
 
