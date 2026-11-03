@@ -28,18 +28,16 @@ running a script on a new acquisition.
 ## Selecting catalog tiles with `catalog_intersect()`
 
 The LAScatalog intersection example is intended to demonstrate the
-`lidR::catalog_intersect()` functionality. It reads a complete LAS/LAZ catalog,
-transforms a polygon area of interest to the catalog CRS, and flags intersecting
+`lidR::catalog_intersect()` functionality. It reads a LAS/LAZ catalog and uses a user provided polygon to flag intersecting
 tiles for processing. The script then creates DEMs from the selected catalog as
 an example, but the same selection approach can be used before other LAScatalog
 operations.
 
 With `subset = "flag_processed"`, the catalog structure is retained and tiles
-outside the area of interest are flagged so subsequent catalog operations skip
-them. The function selects intersecting catalog tiles; it does not clip point
-data to the exact AOI boundary. Tiles crossing the boundary can therefore
-contribute data outside the AOI. Use a separate clipping workflow when exact
-output geometry is required.
+outside the area of interest are flagged as already processed and skipped.
+Similar to the catalog restart options, points from neighboring tiles may still
+be read within the configured chunk buffer to reduce edge effects. However,
+outputs are written only for catalog tiles that intersect the AOI.
 
 ## Grid-snapped pixel metrics
 
