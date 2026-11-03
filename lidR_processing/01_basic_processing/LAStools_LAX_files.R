@@ -18,7 +18,7 @@ library(parallel)
 cores <- detectCores() / 4)
 
 # Directory containing the point cloud files
-folder <- "I:/2024_Kenai_D24_preliminary/LAZ/Reclassified_Noise"
+folder <- "D:/LAS"
 
 # Run LAStools lasindex to create .lax files across all LAZ files in the folder
 system(paste0('C:/LASTools/LASTools_2021.01.28/bin/lasindex -i ', folder, '/*.laz -cores ', cores))
