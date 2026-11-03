@@ -21,6 +21,25 @@ running a script on a new acquisition.
 - [Grid-snapped pixel metrics](lidR_grid_snapped_grid_metrics.R) — demonstrates
   how to supply an existing raster grid to `pixel_metrics()` so outputs from
   separate lidar acquisitions share the same cell alignment.
+- [LAScatalog intersection example](%E2%81%AFlidR_catalog_intersect_example.R) —
+  demonstrates how to use `catalog_intersect()` to process only catalog tiles
+  that intersect an area of interest.
+
+## Selecting catalog tiles with `catalog_intersect()`
+
+The LAScatalog intersection example is intended to demonstrate the
+`lidR::catalog_intersect()` functionality. It reads a complete LAS/LAZ catalog,
+transforms a polygon area of interest to the catalog CRS, and flags intersecting
+tiles for processing. The script then creates DEMs from the selected catalog as
+an example, but the same selection approach can be used before other LAScatalog
+operations.
+
+With `subset = "flag_processed"`, the catalog structure is retained and tiles
+outside the area of interest are flagged so subsequent catalog operations skip
+them. The function selects intersecting catalog tiles; it does not clip point
+data to the exact AOI boundary. Tiles crossing the boundary can therefore
+contribute data outside the AOI. Use a separate clipping workflow when exact
+output geometry is required.
 
 ## Grid-snapped pixel metrics
 
@@ -57,9 +76,9 @@ The script demonstrates how to use the `lidR` LAScatalog processing workflow on
 the entire LAS/LAZ catalog or only the catalog tiles that intersect an area of
 interest. The default assignment, `ctg_processing <- ctg`, processes the whole
 catalog. To select tiles for reprocessing, use the included
-`catalog_intersect()` example and assign its result to `ctg_processing`. This
-selects intersecting catalog tiles; it does not clip output points to the exact
-AOI boundary.
+[LAScatalog intersection example](%E2%81%AFlidR_catalog_intersect_example.R)
+and assign its result to `ctg_processing`. This selects intersecting catalog
+tiles; it does not clip output points to the exact AOI boundary.
 
 The **User inputs** section contains the input and output directories, worker
 count, and catalog chunk buffer. Noise- and ground-classification parameters
