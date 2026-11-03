@@ -38,9 +38,12 @@ metric rasters can be mosaicked without resampling or changing their effective
 spatial resolution.
 
 The included script calculates rumple index as an example. Other metric
-expressions can be substituted inside `pixel_metrics()`. The reference raster
-defines grid geometry only; it does not reproject the point cloud. Confirm that
-the catalog and reference raster use the same projected CRS before processing.
+expressions can be substituted inside `pixel_metrics()`. See the
+[grid-metrics workflow](../02_grid_metrics/lidRmetrics.R) for additional lidar
+metric expressions that can be adapted to the reference-grid approach. The
+reference raster defines grid geometry only; it does not reproject the point
+cloud. Confirm that the catalog and reference raster use the same projected CRS
+before processing.
 
 ## Noise and ground reclassification
 
