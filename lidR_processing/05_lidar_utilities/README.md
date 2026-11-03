@@ -33,14 +33,13 @@ running a script on a new acquisition.
 The [lasR reclassification workflow](lasR_Reclassify_Noise_Ground_DEM.R)
 demonstrates how to chain noise removal, SOR classification, PTD ground
 classification, DTM generation, and LAZ export into one processing pipeline.
-`lasR` is a newer package from the same developers of `lidR` that uses a high-performance C++ engine and stores
-point-cloud data outside R's standard data-frame structures. Its pipeline model
+`lasR` is a newer package from the same developers of `lidR`, but is meant for high thoroughput/production workflows. Its pipeline model
 is designed to process large point-cloud collections efficiently while
 minimizing memory use.
 
 When `lasR` and `lidR` provide equivalent operations, `lasR` will generally run
 faster and may be preferable for large production workflows. For example, it
-supports the SOR and PTD parameters used in the repository's `lidR` noise and
+supports same the SOR and PTD parameters used in the repository's `lidR` noise and
 ground reclassification workflow, making that workflow a good candidate for a
 faster `lasR` implementation.
 
