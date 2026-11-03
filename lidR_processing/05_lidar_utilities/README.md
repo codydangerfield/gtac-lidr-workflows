@@ -193,7 +193,6 @@ subsequent analysis.
 
 Before accepting reclassified or repaired outputs, review:
 
-- horizontal and vertical CRS metadata and units;
 - tile coverage and alignment;
 - retained canopy returns and removed noise;
 - ground classifications on steep slopes, ridges, drainage features, and dense
