@@ -18,12 +18,49 @@ running a script on a new acquisition.
   CRS metadata only to files whose headers do not already contain a CRS.
 - [Noise and ground reclassification](lidR_Reclassify_Noise_Ground.R) — filters
   statistical outliers and classifies ground with PTD, PMF, or MCC.
+- [lasR noise and ground reclassification](lasR_Reclassify_Noise_Ground_DEM.R)
+  — uses an optimized lasR pipeline to remove noise, classify ground, generate
+  DTMs, and write cleaned LAZ files.
 - [Grid-snapped pixel metrics](lidR_grid_snapped_grid_metrics.R) — demonstrates
   how to supply an existing raster grid to `pixel_metrics()` so outputs from
   separate lidar acquisitions share the same cell alignment.
 - [LAScatalog intersection example](%E2%81%AFlidR_catalog_intersect_example.R) —
   demonstrates how to use `catalog_intersect()` to process only catalog tiles
   that intersect an area of interest.
+
+## High-performance processing with `lasR`
+
+The [lasR reclassification workflow](lasR_Reclassify_Noise_Ground_DEM.R)
+demonstrates how to chain noise removal, SOR classification, PTD ground
+classification, DTM generation, and LAZ export into one processing pipeline.
+`lasR` is a newer package from the same developers of `lidR` that uses a high-performance C++ engine and stores
+point-cloud data outside R's standard data-frame structures. Its pipeline model
+is designed to process large point-cloud collections efficiently while
+minimizing memory use.
+
+When `lasR` and `lidR` provide equivalent operations, `lasR` will generally run
+faster and may be preferable for large production workflows. For example, it
+supports the SOR and PTD parameters used in the repository's `lidR` noise and
+ground reclassification workflow, making that workflow a good candidate for a
+faster `lasR` implementation.
+
+However, `lasR` currently provides fewer algorithms and customization options.
+`lidR` remains the better choice when a workflow requires capabilities or
+detailed control that `lasR` does not provide, such as more customizable CHM
+generation, partial catalog processing, restart options, or interactive maps
+and progress displays. The packages are complementary; select the package that
+best supports the required operation and level of control.
+
+`lasR` is not distributed through CRAN. Install it from the R-lidar R-universe:
+
+```r
+install.packages("lasR", repos = "https://r-lidar.r-universe.dev")
+```
+
+See the official [`lasR` documentation](https://r-lidar.github.io/lasR/index.html)
+for current installation instructions, tutorials, supported pipeline stages,
+and benchmarks. The package is actively developing, so available functionality
+may change over time.
 
 ## Selecting catalog tiles with `catalog_intersect()`
 
@@ -34,7 +71,7 @@ an example, but the same selection approach can be used before other LAScatalog
 operations.
 
 With `subset = "flag_processed"`, the catalog structure is retained and tiles
-outside the area of interest are flagged as already processed and skipped.
+outside the area of interest are skipped.
 Similar to the catalog restart options, points from neighboring tiles may still
 be read within the configured chunk buffer to reduce edge effects. However,
 outputs are written only for catalog tiles that intersect the AOI.
