@@ -143,8 +143,15 @@ Large lidar acquisitions can require substantial memory, storage, and processing
 
 ## Repository status
 
-The basic-processing, grid-metrics, tree-detection, and utilities folders
-contain the most complete and reusable workflows in the repository. The ABA
-materials are more project-specific and remain under active development.
-Parameters and hard-coded paths should be treated as examples rather than
-universal defaults.
+This repository is under active development. Some scripts or processing steps
+may not be applicable to every area of interest or lidar acquisition. The
+repository is not intended to provide exhaustive documentation of the `lidR`
+package. Instead, it synthesizes scripts, functions, and processing patterns
+that are frequently used to process lidar data in R.
+
+All parameters and hard-coded paths should be treated as examples rather than
+universal defaults. Parameters may require fine-tuning for each user's area of
+interest, lidar acquisition specifications, point density, coordinate units,
+terrain, vegetation structure, computing resources, and intended outputs.
+Consult the official package documentation and acquisition metadata when
+adapting these workflows.
