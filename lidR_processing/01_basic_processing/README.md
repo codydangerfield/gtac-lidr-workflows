@@ -17,7 +17,7 @@ directly in R.
 
 The script is organized into four processing chunks:
 
-1. **Create LAX indexes** — creates a `.lax` spatial index beside each LAS/LAZ file to improve catalog queries and processing performance. For large acquisitions, the separate LASTools script is generally much faster than generating indexes with `lidR`. The `lidR` method remains available when LASTools is not installed.
+1. **Create LAX indexes** — creates a `.lax` spatial index beside each LAS/LAZ file to improve catalog queries and processing performance. For large acquisitions, the separate LASTools script is generally faster than generating indexes with `lidR`. The `lidR` method remains available when LASTools is not installed.
 2. **Create Digital Elevation Models (DEMs)** — interpolates ground-classified points with a TIN to generate DEM rasters.
 3. **Normalize point-cloud heights** — normalizes the Z value of each point so its value represents height above ground rather than elevation.
 4. **Create Canopy Height Models (CHMs)** — rasterizes the normalized point cloud into a canopy height model (CHM).
@@ -28,11 +28,12 @@ The full workflow does not have to be run in this exact order. LAX indexing and 
 
 - **LASTools:** Run `LASTools_LAX_files.R` for faster batch indexing when
     LASTools is installed. Before running it, update the LAS/LAZ input folder and
-    the path to the `lasindex` executable. The script uses multiple CPU cores.
+    the path to the `lasindex` executable. 
 - **lidR:** Run the **Create .lax files** section of
     `lidR_LAX_DEM_Normalize_CHM.R` when LASTools is unavailable or cannot be
-    installed. This method runs entirely within the R workflow but can take
-    substantially longer for large acquisitions.
+    installed. This method runs entirely within the R workflow but will take
+    slightly longer for large acquisitions. However, the `lidR` catalog interface lets
+    users monitor processing through its interactive plot and progress bar.
 
 ## Input requirements
 
