@@ -31,7 +31,7 @@
 #   - Grid-aligned rumple-index raster tiles
 #
 # Requirements:
-#   - R packages: lidR, future, sf, and raster
+#   - R packages: lidR, future, sf, raster, and mapview
 #
 # Notes:
 #   - Use the same reference raster for every acquisition that will be mosaicked.
@@ -65,7 +65,7 @@ n_workers <- 12
 chunk_buffer <- 30
 
 # ---- 1 Install and load libraries ----
-list_of_packages <- c("lidR", "future", "sf", "raster")
+list_of_packages <- c("lidR", "future", "sf", "raster", "mapview")
 new_packages <- list_of_packages[
   !vapply(list_of_packages, requireNamespace, logical(1), quietly = TRUE)
 ]

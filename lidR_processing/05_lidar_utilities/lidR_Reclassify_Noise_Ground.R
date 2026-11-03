@@ -27,7 +27,7 @@
 #   - LAS/LAZ files with reclassified ground points and filtered noise
 #
 # Requirements:
-#   - R packages: lidR, sf, and future
+#   - R packages: lidR, sf, future, and mapview
 #
 # Notes:
 #   - SOR values k = 15 and m = 3 provide a relatively conservative filter.
@@ -67,7 +67,7 @@ output_folder <- "D:/Lidar_Project/LAS_Reclassified"
 n_workers <- 8
 
 # ---- 1 Install and load libraries ----
-list_of_packages <- c("lidR", "sf", "future")
+list_of_packages <- c("lidR", "sf", "future", "mapview")
 new_packages <- list_of_packages[
   !vapply(list_of_packages, requireNamespace, logical(1), quietly = TRUE)
 ]

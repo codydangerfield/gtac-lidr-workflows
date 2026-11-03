@@ -29,7 +29,7 @@
 #
 # Requirements:
 #   - R packages: terra, sf, future, ForestTools, dplyr, lidR, future.apply,
-#     and progressr
+#     progressr, and mapview
 #
 # Notes:
 #   - Review the worker count, paths, buffer sizes, height filters, CHM
@@ -52,7 +52,7 @@ export_las <- TRUE
 # ---- 1 Install and load libraries ----
 list_of_packages <- c(
   "terra", "sf", "future", "ForestTools", "dplyr", "lidR",
-  "future.apply", "progressr"
+  "future.apply", "progressr", "mapview"
 )
 
 new_packages <- list_of_packages[

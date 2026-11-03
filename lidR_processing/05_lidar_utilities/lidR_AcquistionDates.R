@@ -21,7 +21,7 @@
 #   - One merged file geodatabase containing all footprints and dates
 #
 # Requirements:
-#   - R packages: lidR, sf, future, future.apply, and progressr
+#   - R packages: lidR, sf, future, future.apply, progressr, and mapview
 #
 # Notes:
 #   - This script was developed to estimate acquisition dates when the lidar
@@ -51,7 +51,7 @@ workers <- 8
 
 # ---- 1 Install and load libraries ----
 list_of_packages <- c(
-  "lidR", "sf", "future", "future.apply", "progressr"
+  "lidR", "sf", "future", "future.apply", "progressr", "mapview"
 )
 
 new_packages <- list_of_packages[
@@ -67,6 +67,13 @@ if (length(new_packages) > 0) {
 }
 
 invisible(lapply(list_of_packages, library, character.only = TRUE))
+
+# Basemaps available in interactive LAScatalog maps
+mapviewOptions(
+  basemaps = c(
+    "Esri.WorldImagery", "Esri.WorldTopoMap", "USGS.USTopo", "OpenStreetMap"
+  )
+)
 
 # ---- 2 Configure and inspect the LAS catalog ----
 dir.create(output_folder, recursive = TRUE, showWarnings = FALSE)
