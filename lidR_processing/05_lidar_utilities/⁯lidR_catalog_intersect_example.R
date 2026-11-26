@@ -72,6 +72,8 @@ invisible(lapply(list_of_packages, library, character.only = TRUE))
 
 options(future.globals.maxSize = Inf)
 plan(multisession, workers = n_workers, gc = TRUE)
+# Set mapview basemaps to Esri World Imagery, Esri World Topo Map, USGS USTopo, and OpenStreetMap
+mapviewOptions(basemaps = c("Esri.WorldImagery", "Esri.WorldTopoMap", "USGS.USTopo", "OpenStreetMap"))
 
 # ---- 2 Read the catalog and area of interest ----
 ctg <- readLAScatalog(folder = folder)

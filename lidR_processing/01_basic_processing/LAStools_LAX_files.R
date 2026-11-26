@@ -15,7 +15,7 @@
 library(parallel)
 
 # Determine available cores for parallel processing (using 25% of capacity)
-cores <- detectCores() / 4)
+(cores <- detectCores() / 4)
 
 # Directory containing the point cloud files
 folder <- "D:/LAS"
